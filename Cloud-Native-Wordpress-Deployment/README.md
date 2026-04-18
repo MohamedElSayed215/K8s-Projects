@@ -64,15 +64,20 @@ AWS LoadBalancer
 │   │       ├── variables.tf
 │   │       └── outputs.tf
 │
-├── mysql-secret.yaml              # DB credentials (base64 encoded)
-├── mysql-deployment.yaml          # MySQL Deployment
-├── mysql-service.yaml             # ClusterIP Service
-├── mysql-storageclass.yaml        # StorageClass → AWS EBS (dynamic)
-├── mysql-pvc.yaml                 # PVC — PV auto-provisioned by AWS
-├── wordpress-deployment.yaml      # WordPress Deployment
-├── wordpress-service.yaml         # LoadBalancer Service
-├── wordpress-storageclass.yaml    # StorageClass → AWS EFS (dynamic)
-├── wordpress-pvc.yaml             # PVC — PV auto-provisioned by AWS
+├── mysql-config
+|         ├── mysql-secrets.yaml            # DB credentials (base64 encoded)
+|         ├── mysql-deploy.yaml             # MySQL Deployment
+|         ├── mysql-svc.yaml                # ClusterIP Service
+|         ├── mysql-sc.yaml                 # StorageClass → AWS EBS (dynamic)
+|         ├── mysql-pvc.yaml                # PVC — PV auto-provisioned by AWS
+|
+├── wordpress-config
+|         ├── wordpress-deploy.yaml       # WordPress Deployment
+|         ├── wordpress-svc.yaml          # LoadBalancer Service
+|         ├── wordpress-sc.yaml           # StorageClass → AWS EFS (dynamic)
+|         ├── wordpress-pvc.yaml          # PVC — PV auto-provisioned by AWS
+|
+|                
 └── README.md
 ```
 
@@ -120,9 +125,11 @@ terraform plan -var-file="terraform.tfvars"
 # 3. Provision the infrastructure
 terraform apply -var-file="terraform.tfvars"
 ```
-
-> 📸 _Add screenshot of `terraform apply` output here_
-
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/ec2s.PNG)
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/route-table.PNG)
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/security%20group.PNG)
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/subnets.PNG)
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/vpc.PNG)
 ### Connect kubectl to the cluster
 
 Once `terraform apply` completes, configure `kubectl` to talk to the new cluster:
@@ -135,8 +142,8 @@ aws eks update-kubeconfig \
 # Verify connection
 kubectl get nodes
 ```
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/nodes.PNG)
 
-> 📸 _Add screenshot of `kubectl get nodes` output here_
 
 ---
 
@@ -156,6 +163,7 @@ kubectl apply -f mysql-pvc.yaml
 kubectl apply -f mysql-deployment.yaml
 kubectl apply -f mysql-service.yaml
 ```
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/pv%20and%20sc.PNG)
 
 ### 2. Deploy WordPress
 
@@ -194,13 +202,10 @@ wordpress-xxxxxxx            1/1     Running   0
 
 Stores base64-encoded database credentials consumed by the MySQL deployment.
 
-> 📸 _Add screenshot of `kubectl describe secret mysql-secret` here_
 
 ### MySQL Deployment
 
 Runs a single MySQL instance. Reads credentials from the secret and mounts the EBS-backed PVC at `/var/lib/mysql`.
-
-> 📸 _Add screenshot of `kubectl describe deployment mysql` here_
 
 ### MySQL Service (`ClusterIP`)
 
@@ -210,7 +215,7 @@ Exposes MySQL **only within the cluster** — WordPress connects to it using the
 
 Runs WordPress and connects to MySQL using the secret credentials. Mounts the EFS-backed PVC at `/var/www/html` so uploaded media persists across pod restarts and scales across replicas.
 
-> 📸 _Add screenshot of `kubectl describe deployment wordpress` here_
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/pods.PNG)
 
 ### WordPress Service (`LoadBalancer`)
 
@@ -221,8 +226,7 @@ Provisions an **AWS LoadBalancer** and exposes WordPress publicly on port 80.
 kubectl get svc wordpress-service
 ```
 
-> 📸 _Add screenshot of the running WordPress site in browser here_
-
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/lb-test.PNG)
 ---
 
 ## Storage
