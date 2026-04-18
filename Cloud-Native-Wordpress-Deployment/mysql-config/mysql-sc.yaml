@@ -1,0 +1,22 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mysql-sc
+
+# ─── Provisioner ──────────────────────────────────────────────────
+# Who creates the volume — depends on your cloud/storage backend
+provisioner: ebs.csi.aws.com           # AWS EBS CSI driver
+# provisioner: pd.csi.storage.gke.io   # GCP Persistent Disk
+# provisioner: disk.csi.azure.com      # Azure Disk
+# provisioner: kubernetes.io/no-provisioner  # No dynamic provisioning (local)
+
+reclaimPolicy: Delete          # Delete | Retain
+# Delete: PV is deleted when PVC is deleted (data lost!)
+# Retain: PV is kept when PVC is deleted (manual cleanup needed)
+
+# ─── Volume Binding Mode ──────────────────────────────────────────
+volumeBindingMode: WaitForFirstConsumer   # Immediate | WaitForFirstConsumer
+# Immediate: Create volume as soon as PVC is created
+# WaitForFirstConsumer: Wait until a Pod is scheduled (respects topology)
+# → Use WaitForFirstConsumer for regional clusters to avoid zone mismatch
+

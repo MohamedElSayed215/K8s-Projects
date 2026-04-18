@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+
+spec:
+  # ─── Access Modes ─────────────────────────────────────────────
+  accessModes:
+    - ReadWriteOnce
+
+  # ─── Volume Mode ──────────────────────────────────────────────
+  resources:
+    requests:
+      storage: 20Gi             # Request 20Gi of storage
+
+  # ─── StorageClass ─────────────────────────────────────────────
+  storageClassName: mysql-sc    # Use this StorageClass for dynamic provisioning
+
