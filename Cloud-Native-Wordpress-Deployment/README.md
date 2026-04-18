@@ -31,7 +31,7 @@ AWS LoadBalancer
 └──────────────────────────────────────────────────────┘
 ```
 
-> 📸 _Add architecture diagram screenshot here_
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-Wordpress-Deployment/screenshots/project-arch.jpg)
 
 ---
 
