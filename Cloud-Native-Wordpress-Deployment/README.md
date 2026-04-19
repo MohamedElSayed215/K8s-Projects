@@ -53,16 +53,19 @@ AWS LoadBalancer
 │   ├── main.tf                    # Root module — calls VPC & EKS modules
 │   ├── variables.tf               # Input variables
 │   ├── outputs.tf                 # Cluster endpoint, kubeconfig, etc.
-│   ├── terraform.tfvars           # Your environment values
 │   ├── modules/
 │   │  ├── vpc/
-│   │      ├── main.tf            # VPC, subnets, IGW, route tables
+│   │  |   ├── main.tf           
+│   │  |   ├── variables.tf
+│   │  |   └── outputs.tf
+│   │  |
+│   │  ├── nodes/
+│   │      ├── main.tf            
 │   │      ├── variables.tf
-│   │      └── outputs.tf
-│   │ 
-│   │      
-│   │       
-│   │       
+│   |      └── outputs.tf
+│         
+│          
+│          
 │
 ├── mysql-config
 |         ├── mysql-secrets.yaml            # DB credentials (base64 encoded)
