@@ -42,7 +42,7 @@ spec:
       name: mongodb-volume
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "local-path"
+      storageClassName: "mondodb-sc"
       resources:
         requests:
           storage: 8Gi
