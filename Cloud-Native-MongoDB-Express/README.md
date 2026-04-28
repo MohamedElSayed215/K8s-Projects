@@ -5,7 +5,7 @@ A production-ready Kubernetes setup that deploys a MongoDB StatefulSet with pers
 ---
 
 ## Architecture Overview
-
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Cloud-Native-MongoDB-Express/mongo-aws.jpg)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Kubernetes Cluster                       │
