@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nexus-crm-db-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: mysql-client
+        image: mysql:5.7  # Matches your Aurora engine version
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            mysql -h $DB_WRITER_HOST -u $DB_USER -p$DB_PASSWORD $DB_NAME < /schema/schema.sql
+        envFrom:
+          - configMapRef:
+              name: crm-config
+          - secretRef:
+              name: crm-db-secret
+        volumeMounts:
+        - name: schema-storage
+          mountPath: /schema
+      restartPolicy: OnFailure  # Only restarts if the SQL import fails
+      volumes:
+      - name: schema-storage
+        configMap:
+          name: crm-schema-file
+  # Job will automatically stop after one successful run
+  backoffLimit: 2
