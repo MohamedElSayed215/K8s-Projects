@@ -74,3 +74,23 @@ module "ansible" {
   bastion_public_ip  = module.compute.bastion_public_ip
   inventory_path     = var.inventory_path
 }
+# ==========================================
+# Copy Writer  & Reader Endpoints
+# ==========================================
+resource "null_resource" "update_configmap" {
+
+  depends_on = [
+    module.rds
+  ]
+
+  provisioner "local-exec" {
+
+    command = <<EOT
+export WRITER=${module.rds.writer_endpoint}
+export READER=${module.rds.reader_endpoint}
+
+envsubst < ../crm-app/k8s/configmap-template.yaml > ../crm-app/k8s/configmap.yaml
+EOT
+
+  }
+}

@@ -3,21 +3,13 @@ kind: ConfigMap
 metadata:
   name: crm-config
   namespace: default
-  labels:
-    app: nexus-crm
+
 data:
-  # ── Aurora Writer endpoint (INSERT / UPDATE / DELETE) ─────────────────────
-  # From Terraform output: aws_rds_cluster.writer_endpoint
-  DB_WRITER_HOST: "main-aurora-cluster.cluster-cehh4jojvvsh.us-east-1.rds.amazonaws.com"
+  DB_WRITER_HOST: "main-aurora-cluster.cluster-csujc6lew69u.us-east-1.rds.amazonaws.com"
+  DB_READER_HOST: "main-aurora-cluster.cluster-ro-csujc6lew69u.us-east-1.rds.amazonaws.com"
 
-  # ── Aurora Reader endpoint (SELECT / COUNT) ───────────────────────────────
-  # From Terraform output: aws_rds_cluster.reader_endpoint
-  DB_READER_HOST: "main-aurora-cluster.cluster-ro-cehh4jojvvsh.us-east-1.rds.amazonaws.com"
-
-  # ── DB connection settings ────────────────────────────────────────────────
   DB_PORT: "3306"
-  DB_NAME: "crm_db"          # matches database_name variable default in Terraform
+  DB_NAME: "crm_db"
 
-  # ── App settings ──────────────────────────────────────────────────────────
-  PORT:        "3001"
-  CORS_ORIGIN: "*"            # tighten to your domain in production
+  PORT: "3001"
+  CORS_ORIGIN: "*"
