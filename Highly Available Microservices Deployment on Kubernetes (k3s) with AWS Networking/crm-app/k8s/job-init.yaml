@@ -3,27 +3,35 @@ kind: Job
 metadata:
   name: nexus-crm-db-init
 spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 120        # ✅ fix 3: بيموت لو أخد أكتر من دقيقتين
+  ttlSecondsAfterFinished: 300      # ✅ fix 4: بيتمسح بعد 5 دقايق من الانتهاء
   template:
     spec:
+      restartPolicy: OnFailure
       containers:
       - name: mysql-client
-        image: mysql:5.7  # Matches your Aurora engine version
+        image: mysql:5.7
         command: ["/bin/sh", "-c"]
         args:
           - |
-            mysql -h $DB_WRITER_HOST -u $DB_USER -p$DB_PASSWORD $DB_NAME < /schema/schema.sql
+            set -e
+            echo "Starting DB initialization..."
+            MYSQL_PWD="$DB_PASSWORD" mysql \
+              -h "$DB_WRITER_HOST" \
+              -u "$DB_USER" \
+              "$DB_NAME" \
+              < /schema/schema.sql        # ✅ fix 1 + 2: redirect بدل SOURCE، و MYSQL_PWD بدل -p
+            echo "DB initialization completed successfully"
         envFrom:
           - configMapRef:
               name: crm-config
           - secretRef:
               name: crm-db-secret
         volumeMounts:
-        - name: schema-storage
-          mountPath: /schema
-      restartPolicy: OnFailure  # Only restarts if the SQL import fails
+          - name: schema-storage
+            mountPath: /schema
       volumes:
-      - name: schema-storage
-        configMap:
-          name: crm-schema-file
-  # Job will automatically stop after one successful run
-  backoffLimit: 2
+        - name: schema-storage
+          configMap:
+            name: crm-schema-file
