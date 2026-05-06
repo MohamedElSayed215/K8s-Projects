@@ -5,8 +5,8 @@ metadata:
   namespace: default
 
 data:
-  DB_WRITER_HOST: "main-aurora-cluster.cluster-csujc6lew69u.us-east-1.rds.amazonaws.com"
-  DB_READER_HOST: "main-aurora-cluster.cluster-ro-csujc6lew69u.us-east-1.rds.amazonaws.com"
+  DB_WRITER_HOST: "main-aurora-cluster.cluster-cuistejvdvll.us-east-1.rds.amazonaws.com"
+  DB_READER_HOST: "main-aurora-cluster.cluster-ro-cuistejvdvll.us-east-1.rds.amazonaws.com"
 
   DB_PORT: "3306"
   DB_NAME: "crm_db"

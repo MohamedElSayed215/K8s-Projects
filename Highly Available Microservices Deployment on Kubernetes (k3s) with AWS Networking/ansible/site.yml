@@ -51,3 +51,11 @@
     - ansible.builtin.import_role:
         name: k3s
         tasks_from: copy_project.yml
+
+- name: Deploy all Kubernetes manifests 
+  hosts: masters[0]
+  become: true
+  tasks:
+    - ansible.builtin.import_role:
+        name: k3s
+        tasks_from: run_project.yml

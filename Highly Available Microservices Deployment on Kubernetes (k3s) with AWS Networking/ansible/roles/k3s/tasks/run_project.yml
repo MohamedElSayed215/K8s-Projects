@@ -1,0 +1,7 @@
+- name: Apply selected Kubernetes manifests only
+  ansible.builtin.shell: |
+    for file in $(ls /home/ubuntu/crm-app/k8s/ | grep -v "configmap-template.yaml"); do
+      kubectl apply -f /home/ubuntu/crm-app/k8s/$file
+    done
+  args:
+    executable: /bin/bash

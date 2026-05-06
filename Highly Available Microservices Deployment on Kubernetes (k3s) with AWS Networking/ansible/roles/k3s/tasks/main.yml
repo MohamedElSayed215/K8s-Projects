@@ -1,4 +1,4 @@
----
+
 ---
 - name: Set hostnames
   ansible.builtin.import_tasks: hostname.yml
@@ -15,3 +15,8 @@
 - name: Join workers
   ansible.builtin.import_tasks: join_worker.yml
 
+- name: Copy project to master
+  ansible.builtin.import_tasks: copy_project.yml
+
+- name: Deploy Kubernetes manifests
+  ansible.builtin.import_tasks: run_project.yml    
