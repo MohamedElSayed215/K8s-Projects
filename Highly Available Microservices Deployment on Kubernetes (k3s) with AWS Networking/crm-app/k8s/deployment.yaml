@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-crm
+  namespace: default
+  labels:
+    app: nexus-crm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nexus-crm
+  # ── Rolling update ───────────────────────────────────────────────────────
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: nexus-crm
+    spec:
+      # ── Graceful shutdown ─────────────────────────────────────────────────
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: crm-app
+          image: mohamedelsayed215/nexus-crm:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3001
+              name: http
+          # ── Env: ConfigMap (hosts, ports, db name) ────────────────────────
+          envFrom:
+            - configMapRef:
+                name: crm-config
+            - secretRef:
+                name: crm-db-secret
+          # ── Resource limits ───────────────────────────────────────────────
+          resources:
+            requests:
+              cpu:    "100m"
+              memory: "128Mi"
+            limits:
+              cpu:    "500m"
+              memory: "512Mi"
+          # ── Liveness probe ────────────────────────────────────────────────
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds:       20
+            failureThreshold:    3
+          # ── Readiness probe ───────────────────────────────────────────────
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds:       10
+            failureThreshold:    3
+          # ── Security context ──────────────────────────────────────────────
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot:             true
+            runAsUser:                1000
+            readOnlyRootFilesystem:   false
+      # ── Node selector (only schedule on worker nodes) ────────────────────
+      nodeSelector:
+        node: worker
+      # ── Tolerations ───────────────────────────────────────────────────────
+      tolerations:
+        - key:      node.kubernetes.io/not-ready
+          operator: Exists
+          effect:   NoExecute
+          tolerationSeconds: 300
+        - key:      node.kubernetes.io/unreachable
+          operator: Exists
+          effect:   NoExecute
+          tolerationSeconds: 300
+      # ── Spread across zones (best-effort) ────────────────────────────────
+      topologySpreadConstraints:
+        - maxSkew:           1
+          topologyKey:       topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: nexus-crm
