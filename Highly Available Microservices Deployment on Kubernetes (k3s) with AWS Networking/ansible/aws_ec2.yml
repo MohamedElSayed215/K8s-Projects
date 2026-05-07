@@ -1,0 +1,26 @@
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-east-1
+
+filters:
+  instance-state-name: running
+
+hostnames:
+  - tag:Name
+
+compose:
+  ansible_host: >-
+    public_ip_address if tags.Name is match("k3s-bastion")
+    else private_ip_address
+
+groups:
+  bastion: tags.Name is match("k3s-bastion")
+  masters: tags.Name is match("k3s-master-.*")
+  workers: tags.Name is match("k3s-worker-.*")
+
+vars:
+  ansible_user: ubuntu
+  ansible_ssh_private_key_file: ~/.ssh/id_rsa
+  ansible_ssh_common_args: >-
+    -o ProxyJump=ubuntu@{{ hostvars[groups['bastion'][0]].public_ip_address }}
