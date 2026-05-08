@@ -16,8 +16,6 @@ bastion_instance_type = "t3.micro"
 nlb_port = 30003
 
 # RDS
-db_username       = "admin"
-db_password       = "123456789"  # ⚠️ Move this to a secret manager in production!
 database_name     = "myappdb"
 engine_version    = "5.7.mysql_aurora.2.11.3"
 db_instance_class = "db.t3.medium"
