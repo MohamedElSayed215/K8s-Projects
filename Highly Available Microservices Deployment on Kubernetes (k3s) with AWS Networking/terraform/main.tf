@@ -56,11 +56,11 @@ module "rds" {
 
   private_subnet_ids = module.vpc.private_subnet_ids
   rds_sg_id          = module.security_groups.rds_sg_id
-  db_username        = var.db_username
-  db_password        = var.db_password
   database_name      = var.database_name
   engine_version     = var.engine_version
   db_instance_class  = var.db_instance_class
+  db_username        = data.vault_kv_secret_v2.rds.data["username"]
+  db_password        = data.vault_kv_secret_v2.rds.data["password"]
 }
 
 # ==========================================
@@ -93,4 +93,11 @@ envsubst < ../crm-app/k8s/configmap-template.yaml > ../crm-app/k8s/configmap.yam
 EOT
 
   }
+}
+# ==========================================
+# Read RDS Credentials from Vault
+# ==========================================
+data "vault_kv_secret_v2" "rds" {
+  mount = "secret"
+  name  = "database/rds"
 }
