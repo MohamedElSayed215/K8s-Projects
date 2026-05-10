@@ -59,6 +59,10 @@ Build secure AWS networking architecture using VPCs, subnets, and security group
 # 🏗️ High Level Architecture
 
 ```text
+![](https://github.com/MohamedElSayed215/K8s-Projects/blob/main/Highly%20Available%20Cloud%20Microservices%20Platform/project_arch.jpg)
+
+
+
                             Development
                                  │
               ┌──────────────────┴──────────────────┐
