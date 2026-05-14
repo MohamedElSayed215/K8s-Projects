@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          # المسار الجديد بعد ما شيلنا المسافات
           cache-dependency-path: Highly-Available-Cloud-Microservices-Platform/crm-app/frontend/package-lock.json
 
       - name: Install dependencies
