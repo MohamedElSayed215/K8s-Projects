@@ -9,8 +9,6 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/nexus-application
-  # Define the base path to avoid repetition
-  BASE_PATH: "Highly Available Cloud Microservices Platform/crm-app"
 
 jobs:
   # ──────────────────────────────────────────────
@@ -21,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        # المسار كامل بين علامات تنصيص بسبب المسافات
         working-directory: "Highly Available Cloud Microservices Platform/crm-app/frontend"
 
     steps:
@@ -31,9 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          # Path must be relative to the root of the repo
-          cache-dependency-path: "Highly Available Cloud Microservices Platform/crm-app/frontend/package-lock.json"
+          cache: 'npm'
+          # استخدام الـ Wildcard أضمن للوصول للملف في المسارات الطويلة
+          cache-dependency-path: "**/crm-app/frontend/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
@@ -86,8 +85,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: "Highly Available Cloud Microservices Platform/crm-app/backend/package-lock.json"
+          cache: 'npm'
+          cache-dependency-path: "**/crm-app/backend/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
@@ -98,11 +97,12 @@ jobs:
       - name: Run tests
         run: npm test
         env:
+          # ملاحظة: localhost هنا تعود على الـ Runner نفسه اللي مشغل الـ Container بتاع postgres
           DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
           NODE_ENV: test
 
   # ──────────────────────────────────────────────
-  # 3. Docker build + push
+  # 3. Docker build + push (Only on Main)
   # ──────────────────────────────────────────────
   docker:
     name: Docker (build · push)
@@ -135,8 +135,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          # Context should be where your Dockerfile is. 
-          # If the Dockerfile is in crm-app root:
+          # السياق هو المجلد اللي فيه الـ Dockerfile بتاع الـ CRM
           context: "Highly Available Cloud Microservices Platform/crm-app"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
